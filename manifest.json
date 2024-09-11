@@ -4,7 +4,7 @@
     "description": "Select a number on a webpage and send it to WhatsApp with the selected country code",
     "manifest_version": 3,
     "author": "Mohamed Ezzat",
-    "permissions": ["activeTab", "scripting"],
+    "permissions": ["activeTab", "scripting", "storage"],
     "background": {
       "service_worker": "background.js"
     },
@@ -18,7 +18,9 @@
         "js": ["contentScript.js"]
       }
     ],
-  "icons": {
-    "48": "icon.png"  
+    "icons": {
+      "48": "icon.png"
+    },
+    "options_page": "options.html"  
   }
-}
+  
