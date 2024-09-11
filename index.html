@@ -7,7 +7,25 @@
 </head>
 <body>
     <h1>WhatsApp Me</h1>
-    <button id="configureButton">Configure Country Code</button>
+
+    <!-- Configuration Form (moved from options.html) -->
+    <h2>Configure Country Code and Default Message</h2>
+    <form id="countryForm">
+        <label for="countrySelect">Country Code:</label>
+        <select id="countrySelect" name="countryCode" required>
+        </select>
+        
+        <br>
+
+        <label for="defaultMessage">Default WhatsApp Message:</label>
+        <input type="text" id="defaultMessage" name="defaultMessage" placeholder="Hello, I'd like to...">
+        
+        <br>
+
+        <button type="submit">Save</button>
+    </form>
+
     <script src="popup.js"></script>
+    <script src="options.js"></script> <!-- Include the script that handles form logic -->
 </body>
 </html>

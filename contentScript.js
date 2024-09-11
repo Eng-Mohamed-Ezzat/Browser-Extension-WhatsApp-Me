@@ -1,50 +1,51 @@
 // contentScript.js
 
-document.addEventListener('mouseup', function () {
-    let selectedText = window.getSelection().toString().trim();
+// Function to show WhatsApp icon on hover over phone numbers
+document.addEventListener('mouseover', function (event) {
+    const hoveredText = event.target.textContent.trim();
+    const phoneNumber = extractPhoneNumber(hoveredText);
 
-    if (selectedText) {
-        const phoneNumber = extractPhoneNumber(selectedText);
+    if (phoneNumber) {
+        chrome.storage.sync.get(['countryCode', 'defaultMessage'], function (result) {
+            if (chrome.runtime.lastError) {
+                console.error('Error accessing Chrome storage:', chrome.runtime.lastError);
+                return;
+            }
 
-        if (phoneNumber) {
-            chrome.storage.sync.get(['countryCode'], function (result) {
-                if (chrome.runtime.lastError) {
-                    console.error('Error accessing Chrome storage:', chrome.runtime.lastError);
-                    return;
-                }
+            const countryCode = result.countryCode || '+20'; // Default to Egypt if not set
+            const defaultMessage = result.defaultMessage || ''; // Default message if not set
+            const fullPhoneNumber = `${countryCode}${phoneNumber}`;
 
-                // Retrieve the country code or default to Egypt's code (+20)
-                const countryCode = result.countryCode || '+2';
+            // Check if the icon is already present to avoid duplicates
+            const existingIcon = document.querySelector(`#whatsapp-icon-${phoneNumber}`);
+            if (!existingIcon) {
+                const whatsappIcon = document.createElement('img');
+                whatsappIcon.src = 'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg';
+                whatsappIcon.id = `whatsapp-icon-${phoneNumber}`;
+                whatsappIcon.style.cursor = 'pointer';
+                whatsappIcon.style.marginLeft = '5px'; // Space between phone number and icon
+                whatsappIcon.style.width = '16px';
+                whatsappIcon.style.height = '16px';
+                whatsappIcon.style.verticalAlign = 'middle'; // Align with the middle of the text
+                whatsappIcon.style.display = 'inline'; // Make sure it's inline with the text
+                whatsappIcon.style.position = 'relative'; // Ensure it's aligned relative to the text
 
-                // Clean phone number and prepend country code
-                
-                const fullPhoneNumber = `${countryCode}${phoneNumber}`;
+                event.target.appendChild(whatsappIcon);
 
-                // Create and insert the WhatsApp icon next to the phone number
-                if (!document.querySelector(`#whatsapp-icon-${phoneNumber}`)) {
-                    const whatsappIcon = document.createElement('img');
-                    whatsappIcon.src = 'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg';
-                    whatsappIcon.id = `whatsapp-icon-${phoneNumber}`;
-                    whatsappIcon.style.cursor = 'pointer';
-                    whatsappIcon.style.marginLeft = '5px';
-                    whatsappIcon.style.width = '16px';
-                    whatsappIcon.style.height = '16px';
+                // Add click event to open WhatsApp using the whatsapp:// scheme
+                whatsappIcon.addEventListener('click', function () {
+                    // First, open WhatsApp with just the phone number (no message)
+                    const whatsappUrlPhoneOnly = `whatsapp://send?phone=${fullPhoneNumber}`;
+                    window.open(whatsappUrlPhoneOnly);
 
-                    const selection = window.getSelection();
-                    if (selection.rangeCount > 0) {
-                        const range = selection.getRangeAt(0);
-                        range.collapse(false);
-                        range.insertNode(whatsappIcon);
-                    }
-
-                    // Add click event to open WhatsApp
-                    whatsappIcon.addEventListener('click', function () {
-                        const whatsappUrl = `whatsapp://send?phone=${fullPhoneNumber}`;
-                        window.open(whatsappUrl);
-                    });
-                }
-            });
-        }
+                    // Then, after a delay, open WhatsApp again with the message
+                    setTimeout(function () {
+                        const whatsappUrlWithMessage = `whatsapp://send?phone=${fullPhoneNumber}&text=${encodeURIComponent(defaultMessage)}`;
+                        window.open(whatsappUrlWithMessage);
+                    }, 500); // Delay of 500ms before opening WhatsApp with the message
+                });
+            }
+        });
     }
 });
 
