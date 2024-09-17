@@ -1,26 +1,25 @@
 {
-    "name": "WhatsApp Me",
-    "version": "1.0.0",
-    "description": "Select a number on a webpage and send it to WhatsApp with the selected country code",
-    "manifest_version": 3,
-    "author": "Mohamed Ezzat",
-    "permissions": ["activeTab", "scripting", "storage"],
-    "background": {
+  "name": "WhatsApp Me",
+  "version": "1.0.0",
+  "description": "Select a number on a webpage and send it to WhatsApp with the selected country code",
+  "manifest_version": 3,
+  "author": "Mohamed Ezzat",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "background": {
       "service_worker": "background.js"
-    },
-    "action": {
+  },
+  "action": {
       "default_popup": "index.html",
       "default_title": "Send Number to WhatsApp"
-    },
-    "content_scripts": [
+  },
+  "content_scripts": [
       {
-        "matches": ["<all_urls>"],
-        "js": ["contentScript.js"]
+          "matches": ["<all_urls>"],
+          "js": ["contentScript.js"]
       }
-    ],
-    "icons": {
+  ],
+  "icons": {
       "48": "icon.png"
-    },
-    "options_page": "options.html"
-  }
-  
+  },
+  "options_page": "index.html"
+}
